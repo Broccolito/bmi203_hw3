@@ -48,7 +48,7 @@ def make_clusters(
 def plot_clusters(
         mat: np.ndarray, 
         labels: np.ndarray, 
-        filename: str =None):
+        filename: str=None):
     """
     inputs:
         mat: np.ndarray
