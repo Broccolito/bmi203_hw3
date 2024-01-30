@@ -39,13 +39,40 @@ class Silhouette:
             # Silhouette score is not meaningful for one cluster or if each data point is its own cluster
             raise ValueError("Cannot compute silhouette score with only one cluster or if each point is its own cluster")
 
-        # Compute the mean intra-cluster distance for each sample
-        a = np.array([np.mean(cdist([X[i]], X[y == y[i]], 'euclidean')) for i in range(n)])
+        # Euclidean distance between two points
+        def euclidean_distance(point1, point2):
+            return np.sqrt(np.sum((point1 - point2) ** 2))
 
-        # Compute the mean nearest-cluster distance for each sample
-        b = np.array([np.min([np.mean(cdist([X[i]], X[y == label], 'euclidean')) for label in set(y) - {y[i]}]) for i in range(n)])
+        # Mean distance to all points in the same cluster
+        def mean_intra_cluster_distance(sample, cluster):
+            if len(cluster) <= 1:
+                return 0
+            return sum(euclidean_distance(sample, point) for point in cluster) / (len(cluster) - 1)
 
-        # Silhouette score for each sample
-        silhouette_scores = (b - a) / np.maximum(a, b)
+        # Mean distance to all points in the nearest cluster
+        def mean_nearest_cluster_distance(sample, all_clusters, own_cluster):
+            distances = []
+            for cluster in all_clusters:
+                if cluster is not own_cluster:
+                    mean_distance = sum(euclidean_distance(sample, point) for point in cluster) / len(cluster)
+                    distances.append(mean_distance)
+            return min(distances)
+        
+        # Organize samples by cluster
+        clusters = {}
+        for sample, label in zip(X, y):
+            if label not in clusters:
+                clusters[label] = []
+            clusters[label].append(sample)
 
+        # Calculate silhouette score for each sample
+        silhouette_scores = []
+        for sample, label in zip(X, y):
+            own_cluster = clusters[label]
+            a = mean_intra_cluster_distance(sample, own_cluster)
+            b = mean_nearest_cluster_distance(sample, clusters.values(), own_cluster)
+            score = (b - a) / max(a, b) if max(a, b) != 0 else 0
+            silhouette_scores.append(score)
+
+        # Return the mean silhouette score
         return silhouette_scores

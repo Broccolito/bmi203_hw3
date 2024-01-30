@@ -1,4 +1,5 @@
 import numpy as np
+from sklearn.metrics import silhouette_samples
 from cluster import (
         KMeans, 
         Silhouette, 
@@ -27,6 +28,7 @@ def main():
     scores = Silhouette().score(clusters, pred)
     plot_multipanel(clusters, labels, pred, scores)
     
+
 
 if __name__ == "__main__":
     main()
