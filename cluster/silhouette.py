@@ -40,21 +40,21 @@ class Silhouette:
             raise ValueError("Cannot compute silhouette score with only one cluster or if each point is its own cluster")
 
         # Euclidean distance between two points
-        def euclidean_distance(point1, point2):
+        def _euclidean_distance(point1, point2):
             return np.sqrt(np.sum((point1 - point2) ** 2))
 
         # Mean distance to all points in the same cluster
-        def mean_intra_cluster_distance(sample, cluster):
+        def _mean_intra_cluster_distance(sample, cluster):
             if len(cluster) <= 1:
                 return 0
-            return sum(euclidean_distance(sample, point) for point in cluster) / (len(cluster) - 1)
+            return sum(_euclidean_distance(sample, point) for point in cluster) / (len(cluster) - 1)
 
         # Mean distance to all points in the nearest cluster
-        def mean_nearest_cluster_distance(sample, all_clusters, own_cluster):
+        def _mean_nearest_cluster_distance(sample, all_clusters, own_cluster):
             distances = []
             for cluster in all_clusters:
                 if cluster is not own_cluster:
-                    mean_distance = sum(euclidean_distance(sample, point) for point in cluster) / len(cluster)
+                    mean_distance = sum(_euclidean_distance(sample, point) for point in cluster) / len(cluster)
                     distances.append(mean_distance)
             return min(distances)
         
@@ -69,8 +69,8 @@ class Silhouette:
         silhouette_scores = []
         for sample, label in zip(X, y):
             own_cluster = clusters[label]
-            a = mean_intra_cluster_distance(sample, own_cluster)
-            b = mean_nearest_cluster_distance(sample, clusters.values(), own_cluster)
+            a = _mean_intra_cluster_distance(sample, own_cluster)
+            b = _mean_nearest_cluster_distance(sample, clusters.values(), own_cluster)
             score = (b - a) / max(a, b) if max(a, b) != 0 else 0
             silhouette_scores.append(score)
 
