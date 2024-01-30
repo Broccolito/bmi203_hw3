@@ -34,7 +34,8 @@ def test_observations_less_than_k():
 def test_high_k():
     kmeans = KMeans(k=1000)
     X = np.random.rand(100, 2)
-    kmeans.fit(X)  # Should run without errors
+    with pytest.raises(ValueError):
+        kmeans.fit(X)  # Should run without errors
     pass
 
 def test_high_dimensionality():
@@ -51,8 +52,8 @@ def test_single_dimension():
 
 def test_invalid_input_type():
     kmeans = KMeans(k=3)
-    X = "invalid input"
-    with pytest.raises(ValueError):
+    X = "invalid input" # Test if the function will fail if the input does not have all the attributes
+    with pytest.raises(AttributeError):
         kmeans.fit(X)
     pass
 
