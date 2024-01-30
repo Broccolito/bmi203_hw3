@@ -19,8 +19,8 @@ classifiers = ["License :: OSI Approved :: MIT License"]
 dynamic = ["version", "description"]
 dependencies = [
     "pytest >= 5.0",
-	"numpy"
-	"scipy"
+	"numpy",
+	"scipy",
 	"matplotlib"
 ]
 
